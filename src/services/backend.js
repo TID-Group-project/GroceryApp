@@ -1,6 +1,8 @@
-import "parse/dist/parse.min.js";
+// import "parse/dist/parse.min.js";
 
-const Parse = globalThis.Parse;
+// const Parse = globalThis.Parse;
+
+import Parse from "parse";
 
 Parse.initialize(
   import.meta.env.VITE_PARSE_APP_ID,
