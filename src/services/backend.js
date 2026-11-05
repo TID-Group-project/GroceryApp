@@ -1,7 +1,3 @@
-// import "parse/dist/parse.min.js";
-
-// const Parse = globalThis.Parse;
-
 import Parse from "parse";
 
 Parse.initialize(
