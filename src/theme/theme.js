@@ -63,7 +63,7 @@ const theme = createTheme({
             borderColor: color.disabledBg,
           },
         },
-        outlinedPrimary: {
+        outlined: {
           borderColor: color.border,
           borderWidth: 2,
           "&:hover": {
