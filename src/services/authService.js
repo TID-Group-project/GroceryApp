@@ -1,3 +1,5 @@
+// The only file that talks to Parse about users.
+// Screens call these functions and never use Parse.User directly.
 import Parse from "./backend";
 
 // Turns a Parse user into a plain object for the screens
@@ -9,6 +11,8 @@ function toUser(parseUser) {
 // Turns Parse error codes into short messages for the user
 function friendlyMessage(error) {
   switch (error.code) {
+    // Same message for wrong username and wrong password,
+    // so we don't reveal which usernames exist.
     case Parse.Error.OBJECT_NOT_FOUND: // 101
       return "Wrong username or password.";
     case Parse.Error.USERNAME_TAKEN: // 202
@@ -24,12 +28,13 @@ function friendlyMessage(error) {
 export async function register(username, password) {
   const user = new Parse.User();
   user.set("username", username.trim());
+  // No trim() on the password: spaces can be part of it.
   user.set("password", password);
   try {
     await user.signUp();
     return toUser(user);
   } catch (error) {
-    throw new Error(friendlyMessage(error));
+    throw new Error(friendlyMessage(error), { cause: error });
   }
 }
 
@@ -39,7 +44,7 @@ export async function login(username, password) {
     const user = await Parse.User.logIn(username.trim(), password);
     return toUser(user);
   } catch (error) {
-    throw new Error(friendlyMessage(error));
+    throw new Error(friendlyMessage(error), { cause: error });
   }
 }
 

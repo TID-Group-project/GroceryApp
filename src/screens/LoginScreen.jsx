@@ -1,3 +1,5 @@
+// Login screen. One main "Log in" button and a small "Register" link:
+// in our usability test, two buttons of the same size confused 2 of 4 participants.
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
@@ -14,6 +16,7 @@ function LoginScreen() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState(initialState);
+  // Field errors appear only after the first "Log in" press, not while typing.
   const [submitted, setSubmitted] = useState(false);
   const [pageError, setPageError] = useState("");
   const [saving, setSaving] = useState(false);
