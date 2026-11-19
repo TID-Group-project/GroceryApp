@@ -32,8 +32,12 @@ export const tokens = {
     tapTarget: 48, // buttons, checkbox area, icon buttons, delete button
     listRow: 56, // minimum list row height
     icon: 24,
+    iconSmall: 16, // for eror messages icon
     focusRing: 3,
     focusRingGap: 2,
+    outlineBorder: 2,
+    fieldBorder: 1.5,
+    fieldBorderActive: 2,
   },
   // typography
   font: {

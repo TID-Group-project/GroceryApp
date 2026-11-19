@@ -1,3 +1,14 @@
+# How to push to the repo:
+
+Push a brash to Development, when it is a fisihed component
+Make sure you are always pushing to Development not main!
+
+# How to run the project:
+
+1. npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/icons-material
+2. npm build
+3. npm run dev
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
