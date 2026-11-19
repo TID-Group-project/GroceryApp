@@ -1,0 +1,101 @@
+import { useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
+import Alert from "@mui/material/Alert";
+import Button from "../components/common/Button";
+import TextInput from "../components/common/TextInput";
+import { login } from "../services/authService";
+import { tokens } from "../theme/tokens";
+
+const initialState = { username: "", password: "" };
+
+function LoginScreen() {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState(initialState);
+  const [submitted, setSubmitted] = useState(false);
+  const [pageError, setPageError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+
+// Error for each field ("" = no error). Shown only after pressing "Log in".
+  const errors = {
+    username: form.username.trim() === "" ? "Enter your username" : "",
+    password: form.password === "" ? "Enter your password" : "",
+  };
+  const canSubmit = !errors.username && !errors.password;
+
+  function updateField(field, value) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+    async function handleSubmit(event) {
+    event.preventDefault(); // stop the browser from reloading the page
+    setSubmitted(true);
+    setPageError("");
+
+    if (!canSubmit) return;
+
+    try {
+      setSaving(true);
+      await login(form.username, form.password);
+      navigate("/"); // go to the home screen
+    } catch (error) {
+      setPageError(error.message); // e.g. "Wrong username or password."
+    } finally {
+      setSaving(false);
+    }
+  }
+
+    return (
+    <main
+      style={{
+        maxWidth: 390,
+        margin: "0 auto",
+        padding: tokens.space[6],
+        display: "flex",
+        flexDirection: "column",
+        gap: tokens.space[6],
+      }}
+    >
+      <Typography variant="h1">Log in</Typography>
+
+      {pageError && <Alert severity="error">{pageError}</Alert>}
+
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        style={{ display: "flex", flexDirection: "column", gap: tokens.space[4] }}
+      >
+        <TextInput
+          label="Username"
+          autoComplete="username"
+          value={form.username}
+          onChange={(event) => updateField("username", event.target.value)}
+          error={submitted ? errors.username : ""}
+        />
+        <TextInput
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          value={form.password}
+          onChange={(event) => updateField("password", event.target.value)}
+          error={submitted ? errors.password : ""}
+        />
+        <Button type="submit" disabled={saving} fullWidth>
+          {saving ? "Logging in…" : "Log in"}
+        </Button>
+      </form>
+
+      <Typography variant="body1" sx={{ textAlign: "center" }}>
+        Don&apos;t have an account?{" "}
+        <Link component={RouterLink} to="/register">
+          Register
+        </Link>
+      </Typography>
+    </main>
+  );
+}
+
+export default LoginScreen;

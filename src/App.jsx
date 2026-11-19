@@ -6,9 +6,11 @@ import { tokens } from "./theme/tokens";
 import TextInput from "./components/common/TextInput";
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "./components/common/Modal";
+import { Routes, Route } from "react-router-dom";
+import LoginScreen from "./screens/LoginScreen";
 
 // done to test if the backend is working
-function App() {
+function TestPage() {
   // useEffect(() => {
   //   (async () => {
   //     const item = new Parse.Object("Item");
@@ -138,4 +140,15 @@ function App() {
     </div>
   );
 }
+// Routes: /login shows the login screen.
+// Every other address shows the test page for now (until HomeScreen is ready).
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="*" element={<TestPage />} />
+    </Routes>
+  );
+}
+
 export default App;
