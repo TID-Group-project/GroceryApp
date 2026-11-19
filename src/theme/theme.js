@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles";
 import { tokens } from "./tokens";
 
-const { color, space, radius, size, font, text } = tokens;
+const { color, space, radius, size, font, text, layout } = tokens;
 
 // Turns one text token into a MUI text style
 const textStyle = (t, fontFamily = font.body) => ({
@@ -136,6 +136,21 @@ const theme = createTheme({
             backgroundImage: "none",
             margin: `${space[4]}px`,
           },
+        },
+      },
+    },
+
+    // Page layout: every page is a <Container>, centred, mobile-first width,
+    // its parts stacked with 24 px between them.
+    MuiContainer: {
+      defaultProps: { component: "main", maxWidth: false },
+      styleOverrides: {
+        root: {
+          maxWidth: layout.pageWidth,
+          padding: `${space[6]}px`,
+          display: "flex",
+          flexDirection: "column",
+          gap: `${space[6]}px`,
         },
       },
     },
