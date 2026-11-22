@@ -9,6 +9,7 @@ import Modal from "./components/common/Modal";
 import { Routes, Route } from "react-router-dom";
 import LoginPage from "./screens/LoginPages";
 import RegisterPage from "./screens/RegisterPages";
+import HomePage from "./screens/HomePages";
 
 // done to test if the backend is working
 function TestPage() {
@@ -149,6 +150,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/home" element={<HomePage />} />
       <Route path="*" element={<TestPage />} />
     </Routes>
   );
