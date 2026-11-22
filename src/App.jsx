@@ -6,9 +6,12 @@ import { tokens } from "./theme/tokens";
 import TextInput from "./components/common/TextInput";
 import AddIcon from "@mui/icons-material/Add";
 import Modal from "./components/common/Modal";
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./screens/LoginPages";
+import RegisterPage from "./screens/RegisterPages";
 
 // done to test if the backend is working
-function App() {
+function TestPage() {
   // useEffect(() => {
   //   (async () => {
   //     const item = new Parse.Object("Item");
@@ -138,4 +141,17 @@ function App() {
     </div>
   );
 }
+
+// /login and /register are the auth pages; any other path shows the test page
+// (TestPage) until the real home screen is built.
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="*" element={<TestPage />} />
+    </Routes>
+  );
+}
+
 export default App;
