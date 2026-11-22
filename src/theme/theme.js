@@ -169,6 +169,36 @@ const theme = createTheme({
         },
       },
     },
+
+    // list card (a pressable row)
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          minHeight: size.listRow,
+          padding: `${space[3]}px ${space[4]}px`,
+          borderRadius: `${radius.md}px`,
+          backgroundColor: color.surface,
+          border: `${size.fieldBorder}px solid ${color.border}`,
+          "&:hover": { backgroundColor: color.primarySoft },
+          "&:focus-visible": {
+            outline: `${size.focusRing}px solid ${color.onyx}`,
+            outlineOffset: `${size.focusRingGap}px`,
+          },
+        },
+      },
+    },
+
+    // the stack of list cards
+    MuiList: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: `${space[3]}px`,
+        },
+      },
+    },
   },
 });
 

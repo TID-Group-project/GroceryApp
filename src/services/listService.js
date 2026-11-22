@@ -26,11 +26,11 @@ export async function addList(name) {
   return list.save();
 }
 
-// export async function loadSharedWithMe() {
-//   const rows = await new Parse.Query(ListMember)
-//     .equalTo("user", Parse.User.current())
-//     .include("list")
-//     .find();
+export async function loadSharedWithMe() {
+  const rows = await new Parse.Query(ListMember)
+    .equalTo("user", Parse.User.current())
+    .include("list")
+    .find();
 
-//   return rows.filter((row) => row.get("list"));
-// }
+  return rows.filter((row) => row.get("list"));
+}
