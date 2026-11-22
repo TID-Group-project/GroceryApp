@@ -46,6 +46,7 @@ function HomePage() {
   const nameError = name.trim() === "" ? "Enter a name for your list" : "";
 
   function openModal() {
+    event.currentTarget.blur();
     setName("");
     setSubmitted(false);
     setModalError("");
