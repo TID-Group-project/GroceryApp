@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles";
 import { tokens } from "./tokens";
 
-const { color, space, radius, size, font, text } = tokens;
+const { color, space, radius, size, font, text, layout } = tokens;
 
 // Turns one text token into a MUI text style
 const textStyle = (t, fontFamily = font.body) => ({
@@ -140,6 +140,21 @@ const theme = createTheme({
       },
     },
 
+    // Page layout: every page is a <Container>, centred, mobile-first width,
+    // its parts stacked with 24 px between them.
+    MuiContainer: {
+      defaultProps: { component: "main", maxWidth: false },
+      styleOverrides: {
+        root: {
+          maxWidth: layout.pageWidth,
+          padding: `${space[6]}px`,
+          display: "flex",
+          flexDirection: "column",
+          gap: `${space[6]}px`,
+        },
+      },
+    },
+
     // Icon buttons (the X in the pop-up, and later the trash and people icons)
     MuiIconButton: {
       styleOverrides: {
@@ -151,6 +166,47 @@ const theme = createTheme({
             outline: `${size.focusRing}px solid ${color.onyx}`,
             outlineOffset: `${size.focusRingGap}px`,
           },
+        },
+      },
+    },
+
+    // list card (a pressable row)
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          minHeight: size.listRow,
+          padding: `${space[3]}px ${space[4]}px`,
+          borderRadius: `${radius.md}px`,
+          backgroundColor: color.surface,
+          border: `${size.fieldBorder}px solid ${color.border}`,
+          "&:hover": { backgroundColor: color.primarySoft },
+          "&:focus-visible": {
+            outline: `${size.focusRing}px solid ${color.onyx}`,
+            outlineOffset: `${size.focusRingGap}px`,
+          },
+        },
+      },
+    },
+
+    // the stack of list cards
+    MuiList: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: `${space[3]}px`,
+        },
+      },
+    },
+
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          minHeight: size.listRow,
+          backgroundColor: color.surface,
+          borderRadius: `${radius.md}px`,
+          marginBottom: `${space[2]}px`,
         },
       },
     },
