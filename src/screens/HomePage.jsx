@@ -9,11 +9,11 @@ import IconButton from "@mui/material/IconButton";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import Parse from "../services/backend.js";
-import Button from "../components/common/Button";
-import TextInput from "../components/common/TextInput";
-import Modal from "../components/common/Modal";
-import ListCard from "../components/list/ListCard";
-import { loadListsOwner, addList } from "../services/listService";
+import Button from "../components/common/Button.jsx";
+import TextInput from "../components/common/TextInput.jsx";
+import Modal from "../components/common/Modal.jsx";
+import ListCard from "../components/list/ListCard.jsx";
+import { loadListsOwner, addList } from "../services/listService.js";
 
 function HomePage() {
   const navigate = useNavigate();
