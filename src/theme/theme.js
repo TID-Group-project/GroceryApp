@@ -199,6 +199,17 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          minHeight: size.listRow,
+          backgroundColor: color.surface,
+          borderRadius: `${radius.md}px`,
+          marginBottom: `${space[2]}px`,
+        },
+      },
+    },
   },
 });
 
