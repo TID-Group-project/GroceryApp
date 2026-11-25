@@ -39,6 +39,10 @@ export const tokens = {
     fieldBorder: 1.5,
     fieldBorderActive: 2,
   },
+  // layout (px)
+  layout: {
+    pageWidth: 390, // mobile-first: every page is at most 390 px wide
+  },
   // typography
   font: {
     body: '"DM Sans", sans-serif',
