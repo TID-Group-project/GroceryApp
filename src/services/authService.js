@@ -32,6 +32,13 @@ export async function register(username, password) {
   user.set("password", password);
   try {
     await user.signUp();
+
+    // Allow other users to find this username when sharing a list
+    const acl = new Parse.ACL(user);
+    acl.setPublicReadAccess(true);
+    user.setACL(acl);
+    await user.save();
+
     return toUser(user);
   } catch (error) {
     throw new Error(friendlyMessage(error), { cause: error });

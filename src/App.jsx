@@ -4,6 +4,7 @@ import LoginPage from "./screens/LoginPage";
 import RegisterPage from "./screens/RegisterPage";
 import HomePage from "./screens/HomePage";
 import ListPage from "./screens/ListPage";
+import SharePages from "./pages/SharePages";
 
 // Only logged-in users may see the page; everyone else is sent to the login screen.
 function RequireLogin({ children }) {
@@ -18,6 +19,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/lists/:listId" element={<ListPage />} />
+      <Route path="/lists/:listId/share" element={<SharePages />} />
       <Route
         path="/"
         element={

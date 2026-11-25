@@ -35,13 +35,10 @@ import {
 } from "../services/memberService";
 import { tokens } from "../theme/tokens";
 
-// TODO: Remove fallback TEST_LIST_ID once App.jsx routes to /list/:listId/share
-const TEST_LIST_ID = "fv3P5J2t14";
-
 export default function SharePages({ listId: propListId }) {
   const { listId: paramListId } = useParams();
   const navigate = useNavigate();
-  const activeListId = propListId || paramListId || TEST_LIST_ID;
+  const activeListId = propListId || paramListId;
   const currentUser = getCurrentUser();
 
   const [listName, setListName] = useState("");
@@ -55,7 +52,6 @@ export default function SharePages({ listId: propListId }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-
   // Remove Member Confirmation Modal State
   const [memberToRemove, setMemberToRemove] = useState(null);
 
@@ -171,7 +167,10 @@ export default function SharePages({ listId: propListId }) {
         alignItems="center"
         sx={{ mb: `${tokens.space[4]}px` }}
       >
-        <IconButton aria-label="Back to list" onClick={() => navigate(-1)}>
+        <IconButton
+          aria-label="Back to list"
+          onClick={() => navigate(`/lists/${activeListId}`)}
+        >
           <ArrowBackIcon />
         </IconButton>
         <IconButton aria-label="Close to home" onClick={() => navigate("/")}>
