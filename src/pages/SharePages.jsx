@@ -18,8 +18,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Button from "../components/common/Button";
