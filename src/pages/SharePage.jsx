@@ -34,7 +34,7 @@ import {
   removeAllOtherMembers,
 } from "../services/memberService";
 
-export default function SharePages({ listId: propListId }) {
+export default function SharePage({ listId: propListId }) {
   const { listId: paramListId } = useParams();
   const navigate = useNavigate();
   const activeListId = propListId || paramListId;
