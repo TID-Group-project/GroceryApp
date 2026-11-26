@@ -31,9 +31,8 @@ import {
   getAvailableUsers,
   addMembersToList,
   removeMemberFromList,
-  deleteListForEveryone,
+  removeAllOtherMembers,
 } from "../services/memberService";
-import { tokens } from "../theme/tokens";
 
 export default function SharePages({ listId: propListId }) {
   const { listId: paramListId } = useParams();
@@ -52,8 +51,13 @@ export default function SharePages({ listId: propListId }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
   // Remove Member Confirmation Modal State
   const [memberToRemove, setMemberToRemove] = useState(null);
+
+  // Owner Status & Remove All Confirmation Modal State
+  const [ownerId, setOwnerId] = useState(null);
+  const [confirmRemoveAllOpen, setConfirmRemoveAllOpen] = useState(false);
 
   async function loadPageData() {
     try {
@@ -64,6 +68,7 @@ export default function SharePages({ listId: propListId }) {
         getListMembers(activeListId),
       ]);
       setListName(details.name);
+      setOwnerId(details.ownerId);
       setMembers(memberList);
     } catch (err) {
       setError(err.message || "Could not load list members.");
@@ -135,38 +140,30 @@ export default function SharePages({ listId: propListId }) {
     }
   }
 
-  async function handleDeleteList() {
+  async function handleConfirmRemoveAll() {
     try {
       setSubmitting(true);
-      await deleteListForEveryone(activeListId);
-      navigate("/");
+      await removeAllOtherMembers(activeListId);
+      setMembers((prev) => prev.filter((m) => m.userId === ownerId));
+      setConfirmRemoveAllOpen(false);
     } catch (err) {
-      setError(err.message || "Could not delete list.");
+      setError(err.message || "Could not remove members.");
+    } finally {
       setSubmitting(false);
     }
   }
+
+  const isOwner = Boolean(currentUser?.id && currentUser.id === ownerId);
+  const hasOtherMembers = members.some((m) => m.userId !== ownerId);
 
   const filteredUsers = availableUsers.filter((u) =>
     u.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        py: `${tokens.space[6]}px`,
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <Container>
       {/* Top Navigation: Back to List & Close to Home */}
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: `${tokens.space[4]}px` }}
-      >
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
         <IconButton
           aria-label="Back to list"
           onClick={() => navigate(`/lists/${activeListId}`)}
@@ -178,15 +175,9 @@ export default function SharePages({ listId: propListId }) {
         </IconButton>
       </Stack>
 
-      <Typography variant="h2" sx={{ mb: `${tokens.space[4]}px` }}>
-        List Members ({members.length})
-      </Typography>
+      <Typography variant="h2">List Members ({members.length})</Typography>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: `${tokens.space[4]}px` }}>
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error">{error}</Alert>}
 
       {/* Add People Button */}
       <Button
@@ -194,34 +185,24 @@ export default function SharePages({ listId: propListId }) {
         fullWidth
         startIcon={<PersonAddOutlinedIcon />}
         onClick={handleOpenAddModal}
-        sx={{ mb: `${tokens.space[6]}px` }}
       >
         Add people
       </Button>
 
       {/* Current Members List */}
-      <List
-        sx={{
-          bgcolor: tokens.color.surface,
-          borderRadius: `${tokens.radius.md}px`,
-          border: `${tokens.size.fieldBorder}px solid ${tokens.color.border}`,
-          p: 0,
-          overflow: "hidden",
-        }}
-      >
+      <List>
         {loading ? (
-          <ListItem sx={{ minHeight: tokens.size.listRow }}>
+          <ListItem>
             <ListItemText primary="Loading members..." />
           </ListItem>
         ) : (
-          members.map((member, index) => {
+          members.map((member) => {
             const isYou = currentUser?.id === member.userId;
             return (
               <ListItem
                 key={member.userId}
-                divider={index < members.length - 1}
-                sx={{ minHeight: tokens.size.listRow }}
                 secondaryAction={
+                  isOwner &&
                   !isYou && (
                     <IconButton
                       edge="end"
@@ -233,7 +214,7 @@ export default function SharePages({ listId: propListId }) {
                   )
                 }
               >
-                <ListItemIcon sx={{ minWidth: 40, color: tokens.color.onyx }}>
+                <ListItemIcon>
                   <PersonOutlineIcon />
                 </ListItemIcon>
                 <ListItemText
@@ -246,20 +227,20 @@ export default function SharePages({ listId: propListId }) {
         )}
       </List>
 
-      {/* Bottom Action: Delete list for everyone */}
-      <Stack sx={{ mt: "auto", pt: `${tokens.space[8]}px` }}>
+      {/* Bottom Action: Remove all other members (owner only) */}
+      {isOwner && (
         <Button
           variant="outlined"
           color="error"
           fullWidth
-          disabled={submitting}
-          onClick={handleDeleteList}
+          disabled={submitting || !hasOtherMembers}
+          onClick={() => setConfirmRemoveAllOpen(true)}
         >
-          Delete list for everyone
+          Remove all members
         </Button>
-      </Stack>
+      )}
 
-      {/* MODAL 1: Search & Select Users (Screens 10 & 11) */}
+      {/* MODAL 1: Search & Select Users */}
       <Dialog
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
@@ -270,7 +251,6 @@ export default function SharePages({ listId: propListId }) {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
-          sx={{ mb: `${tokens.space[4]}px` }}
         >
           <IconButton aria-label="Back" onClick={() => setAddModalOpen(false)}>
             <ArrowBackIcon />
@@ -293,38 +273,21 @@ export default function SharePages({ listId: propListId }) {
           }}
         />
 
-        <List
-          sx={{
-            mt: `${tokens.space[3]}px`,
-            mb: `${tokens.space[4]}px`,
-            maxHeight: 280,
-            overflowY: "auto",
-            border: `${tokens.size.fieldBorder}px solid ${tokens.color.border}`,
-            borderRadius: `${tokens.radius.md}px`,
-            p: 0,
-          }}
-        >
+        <List>
           {filteredUsers.length === 0 ? (
-            <ListItem sx={{ minHeight: tokens.size.listRow }}>
+            <ListItem>
               <ListItemText primary="No users found" />
             </ListItem>
           ) : (
-            filteredUsers.map((user, index) => {
+            filteredUsers.map((user) => {
               const checked = selectedUsers.some((u) => u.id === user.id);
               return (
-                <ListItem
-                  key={user.id}
-                  disablePadding
-                  divider={index < filteredUsers.length - 1}
-                  sx={{
-                    bgcolor: checked ? tokens.color.primarySoft : "transparent",
-                  }}
-                >
+                <ListItem key={user.id} disablePadding>
                   <ListItemButton
+                    selected={checked}
                     onClick={() => handleToggleUser(user)}
-                    sx={{ minHeight: tokens.size.listRow }}
                   >
-                    <ListItemIcon sx={{ minWidth: 40 }}>
+                    <ListItemIcon>
                       <Checkbox
                         edge="start"
                         checked={checked}
@@ -332,9 +295,7 @@ export default function SharePages({ listId: propListId }) {
                         disableRipple
                       />
                     </ListItemIcon>
-                    <ListItemIcon
-                      sx={{ minWidth: 36, color: tokens.color.onyx }}
-                    >
+                    <ListItemIcon>
                       <PersonOutlineIcon />
                     </ListItemIcon>
                     <ListItemText
@@ -358,17 +319,15 @@ export default function SharePages({ listId: propListId }) {
         </Button>
       </Dialog>
 
-      {/* MODAL 2: Remove Member Confirmation (Screen 13) */}
+      {/* MODAL 2: Remove Member Confirmation */}
       <Dialog
         open={Boolean(memberToRemove)}
         onClose={() => setMemberToRemove(null)}
         fullWidth
         maxWidth="xs"
       >
-        <Typography variant="h3" sx={{ mb: `${tokens.space[2]}px` }}>
-          Remove {memberToRemove?.username}?
-        </Typography>
-        <Typography variant="body1" sx={{ mb: `${tokens.space[6]}px` }}>
+        <Typography variant="h3">Remove {memberToRemove?.username}?</Typography>
+        <Typography variant="body1">
           {memberToRemove?.username} won&apos;t see or edit &quot;{listName}
           &quot;.
         </Typography>
@@ -387,6 +346,37 @@ export default function SharePages({ listId: propListId }) {
             onClick={handleConfirmRemove}
           >
             {submitting ? "Removing..." : "Remove"}
+          </Button>
+        </Stack>
+      </Dialog>
+
+      {/* MODAL 3: Remove All Other Members Confirmation */}
+      <Dialog
+        open={confirmRemoveAllOpen}
+        onClose={() => setConfirmRemoveAllOpen(false)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <Typography variant="h3">Remove everyone else?</Typography>
+        <Typography variant="body1">
+          All other members won&apos;t see or edit &quot;{listName}&quot;. You
+          will remain the owner.
+        </Typography>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button
+            variant="outlined"
+            disabled={submitting}
+            onClick={() => setConfirmRemoveAllOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            disabled={submitting}
+            onClick={handleConfirmRemoveAll}
+          >
+            {submitting ? "Removing..." : "Remove all"}
           </Button>
         </Stack>
       </Dialog>

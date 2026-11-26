@@ -133,13 +133,37 @@ export async function removeMemberFromList(listId, memberRecordId, userId) {
   }
 }
 
-// Deletes the list, all its items, and all ListMember rows for everyone
-export async function deleteListForEveryone(listId) {
+// Removes all shared members from the list and revokes their ACL access, keeping the owner intact
+export async function removeAllOtherMembers(listId) {
   const list = await new Parse.Query(List).get(listId);
+  const ownerId = list.get("owner")?.id;
   const items = await new Parse.Query(Item).equalTo("list", list).find();
-  const members = await new Parse.Query(ListMember)
+  const memberRows = await new Parse.Query(ListMember)
     .equalTo("list", list)
     .find();
 
-  await Parse.Object.destroyAll([...items, ...members, list]);
+  const rowsToDestroy = [];
+  const listAcl = list.getACL();
+
+  for (const row of memberRows) {
+    const memberUserId = row.get("user")?.id;
+    if (memberUserId && memberUserId !== ownerId) {
+      if (listAcl) {
+        listAcl.setReadAccess(memberUserId, false);
+        listAcl.setWriteAccess(memberUserId, false);
+      }
+      rowsToDestroy.push(row);
+    }
+  }
+
+  if (listAcl) {
+    list.setACL(listAcl);
+    items.forEach((item) => item.setACL(listAcl));
+  }
+
+  await Parse.Object.saveAll([list, ...items]);
+
+  if (rowsToDestroy.length > 0) {
+    await Parse.Object.destroyAll(rowsToDestroy);
+  }
 }
