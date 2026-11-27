@@ -192,6 +192,9 @@ const theme = createTheme({
             outline: `${size.focusRing}px solid ${color.onyx}`,
             outlineOffset: `${size.focusRingGap}px`,
           },
+          "&.MuiListItem-secondaryAction > .MuiListItemButton-root": {
+            paddingRight: `${size.tapTarget + space[4]}px`,
+          },
         },
       },
     },
@@ -246,6 +249,30 @@ const theme = createTheme({
           borderRadius: `${radius.sm}px`,
           ...textStyle(text.caption),
           height: 28,
+          marginLeft: `${space[2]}px`,
+        },
+        icon: { color: "inherit", fontSize: size.iconSmall },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          borderRadius: `${radius.md}px`,
+          backgroundColor: color.surface,
+          border: `${size.fieldBorder}px solid ${color.border}`,
+          boxShadow: "none",
+        },
+        // your MuiList override adds a 12 px gap, which a menu doesn't need
+        list: { padding: `${space[1]}px 0`, gap: 0 },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          minHeight: size.tapTarget,
+          gap: `${space[3]}px`,
+          // icons take the colour of the text, so "Delete list" is red as a whole
+          "& .MuiListItemIcon-root": { minWidth: 0, color: "inherit" },
         },
       },
     },

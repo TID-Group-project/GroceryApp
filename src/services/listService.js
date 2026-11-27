@@ -1,6 +1,7 @@
 import Parse from "./backend.js";
 
 const List = Parse.Object.extend("List");
+const Item = Parse.Object.extend("Item");
 const ListMember = Parse.Object.extend("ListMember");
 
 export async function loadListsOwner() {
@@ -35,7 +36,36 @@ export async function loadSharedWithMe() {
   return rows.filter((row) => row.get("list"));
 }
 
-// Loads all lists for the home screen (owned + shared with me) with an isShared flag
+// Changes the name of a list.
+// Members have write access to the list too, so any member can rename it.
+export async function renameList(listId, name) {
+  // we only have the id, so we build a stand-in object pointing at that row
+  const list = List.createWithoutData(listId);
+  list.set("name", name);
+  await list.save();
+}
+
+// Deletes a list, all its items and all its member rows, for everyone.
+// Only the owner may do this (the ACL of the list allows it).
+export async function deleteList(listId) {
+  const list = await new Parse.Query(List).get(listId);
+  const items = await new Parse.Query(Item)
+    .equalTo("list", list)
+    .limit(1000)
+    .find();
+  const members = await new Parse.Query(ListMember)
+    .equalTo("list", list)
+    .limit(1000)
+    .find();
+
+  await Parse.Object.destroyAll([...items, ...members, list]);
+}
+
+// Loads all lists for the home screen (owned + shared with me), as plain objects:
+//   isOwner         true = I created it (I can delete it), false = I can only leave it
+//   isShared        true = at least one other person is a member
+//   memberCount     how many other people are members (only known for my own lists)
+//   memberRecordId  my ListMember row (only for lists shared with me, needed to leave)
 export async function loadAllUserLists() {
   const currentUser = Parse.User.current();
 
@@ -47,18 +77,19 @@ export async function loadAllUserLists() {
       .find(),
   ]);
 
-  // Check which owned lists have shared members in ListMember
-  const sharedOwnedIds = new Set();
+  // Count the other members of each owned list in ListMember
+  const memberCounts = {};
   if (ownedLists.length > 0) {
     const memberRows = await new Parse.Query(ListMember)
       .containedIn("list", ownedLists)
+      .limit(1000)
       .find();
 
     for (const row of memberRows) {
       const listId = row.get("list")?.id;
       const memberUserId = row.get("user")?.id;
       if (listId && memberUserId && memberUserId !== currentUser?.id) {
-        sharedOwnedIds.add(listId);
+        memberCounts[listId] = (memberCounts[listId] ?? 0) + 1;
       }
     }
   }
@@ -66,7 +97,10 @@ export async function loadAllUserLists() {
   const results = ownedLists.map((list) => ({
     id: list.id,
     name: list.get("name"),
-    isShared: sharedOwnedIds.has(list.id),
+    isShared: (memberCounts[list.id] ?? 0) > 0,
+    isOwner: true,
+    memberCount: memberCounts[list.id] ?? 0,
+    memberRecordId: null,
   }));
 
   const seenIds = new Set(results.map((l) => l.id));
@@ -79,6 +113,9 @@ export async function loadAllUserLists() {
         id: list.id,
         name: list.get("name"),
         isShared: true,
+        isOwner: false,
+        memberCount: null,
+        memberRecordId: row.id,
       });
     }
   }

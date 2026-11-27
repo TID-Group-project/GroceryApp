@@ -1,5 +1,3 @@
-//Developing code -  Ivana
-
 // The only file that talks to Parse about list members and sharing.
 import Parse from "./backend";
 
@@ -131,6 +129,10 @@ export async function removeMemberFromList(listId, memberRecordId, userId) {
     const memberRecord = ListMember.createWithoutData(memberRecordId);
     await memberRecord.destroy();
   }
+}
+// A member leaves a list: the same as being removed, but for yourself.
+export async function leaveList(listId, memberRecordId) {
+  await removeMemberFromList(listId, memberRecordId, Parse.User.current().id);
 }
 
 // Removes all shared members from the list and revokes their ACL access, keeping the owner intact

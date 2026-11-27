@@ -1,5 +1,3 @@
-/* Developing code: Ivana Andrade */
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";

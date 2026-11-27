@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Parse from "./services/backend";
-import LoginPage from "./pages/LoginPage.js";
+import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ListPage from "./pages/ListPage.jsx";
