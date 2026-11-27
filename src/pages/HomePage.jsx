@@ -13,7 +13,7 @@ import Button from "../components/common/Button.jsx";
 import TextInput from "../components/common/TextInput.jsx";
 import Modal from "../components/common/Modal.jsx";
 import ListCard from "../components/list/ListCard.jsx";
-import { loadListsOwner, addList } from "../services/listService.js";
+import { loadAllUserLists, addList } from "../services/listService.js";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ function HomePage() {
   useEffect(() => {
     async function load() {
       try {
-        setLists(await loadListsOwner());
+        setLists(await loadAllUserLists());
       } catch {
         setPageError("Could not load your lists. Try again.");
       }
@@ -63,7 +63,10 @@ function HomePage() {
     try {
       setSaving(true);
       const newList = await addList(name.trim());
-      setLists((current) => [newList, ...current]); // newest list on top
+      setLists((current) => [
+        { id: newList.id, name: newList.get("name"), isShared: false },
+        ...current,
+      ]); // newest list on top
       setModalOpen(false);
     } catch {
       setModalError("Could not create the list. Try again.");
@@ -101,7 +104,8 @@ function HomePage() {
         {lists.map((list) => (
           <ListCard
             key={list.id}
-            name={list.get("name")}
+            name={list.name}
+            isShared={list.isShared}
             onClick={() => navigate(`/lists/${list.id}`)}
           />
         ))}

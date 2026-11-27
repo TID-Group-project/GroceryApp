@@ -135,6 +135,9 @@ const theme = createTheme({
             backgroundColor: color.surface,
             backgroundImage: "none",
             margin: `${space[4]}px`,
+            display: "flex",
+            flexDirection: "column",
+            gap: `${space[4]}px`,
           },
         },
       },
@@ -147,6 +150,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           maxWidth: layout.pageWidth,
+          minHeight: "100vh",
           padding: `${space[6]}px`,
           display: "flex",
           flexDirection: "column",
@@ -180,6 +184,10 @@ const theme = createTheme({
           backgroundColor: color.surface,
           border: `${size.fieldBorder}px solid ${color.border}`,
           "&:hover": { backgroundColor: color.primarySoft },
+          "&.Mui-selected": {
+            backgroundColor: color.primarySoft,
+            "&:hover": { backgroundColor: color.primarySoft },
+          },
           "&:focus-visible": {
             outline: `${size.focusRing}px solid ${color.onyx}`,
             outlineOffset: `${size.focusRingGap}px`,
@@ -196,6 +204,10 @@ const theme = createTheme({
           display: "flex",
           flexDirection: "column",
           gap: `${space[3]}px`,
+          ".MuiDialog-paper &": {
+            maxHeight: layout.modalListMaxHeight,
+            overflowY: "auto",
+          },
         },
       },
     },
@@ -206,7 +218,34 @@ const theme = createTheme({
           minHeight: size.listRow,
           backgroundColor: color.surface,
           borderRadius: `${radius.md}px`,
+          border: `${size.fieldBorder}px solid ${color.border}`,
           marginBottom: `${space[2]}px`,
+          "&.MuiListItem-padding": {},
+          "&:not(.MuiListItem-padding)": {
+            border: "none",
+            backgroundColor: "transparent",
+          },
+        },
+      },
+    },
+
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {
+          minWidth: 40,
+          color: color.onyx,
+        },
+      },
+    },
+
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          backgroundColor: color.primarySoft,
+          color: color.onyx,
+          borderRadius: `${radius.sm}px`,
+          ...textStyle(text.caption),
+          height: 28,
         },
       },
     },
