@@ -42,6 +42,7 @@ export const tokens = {
   // layout (px)
   layout: {
     pageWidth: 390, // mobile-first: every page is at most 390 px wide
+    modalListMaxHeight: 280, // max height for scrollable user search list
   },
   // typography
   font: {

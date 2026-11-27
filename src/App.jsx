@@ -1,9 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Parse from "./services/backend";
-import LoginPage from "./screens/LoginPage";
-import RegisterPage from "./screens/RegisterPage";
-import HomePage from "./screens/HomePage";
-import ListPage from "./screens/ListPage";
+import LoginPage from "./pages/LoginPage.js";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import HomePage from "./pages/HomePage.jsx";
+import ListPage from "./pages/ListPage.jsx";
+import SharePage from "./pages/SharePage.jsx";
 
 // Only logged-in users may see the page; everyone else is sent to the login screen.
 function RequireLogin({ children }) {
@@ -18,6 +19,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/lists/:listId" element={<ListPage />} />
+      <Route path="/lists/:listId/share" element={<SharePage />} />
       <Route
         path="/"
         element={

@@ -7,6 +7,7 @@ import Container from "@mui/material/Container";
 import List from "@mui/material/List";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import Stack from "@mui/material/Stack";
 import { loadList } from "../services/listService";
 import {
@@ -96,7 +97,13 @@ function ListPage() {
 
   return (
     <Container>
-      <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+      <Stack direction="row" sx={{ justifyContent: "flex-end", gap: 1 }}>
+        <IconButton
+          aria-label="Share list"
+          onClick={() => navigate(`/lists/${listId}/share`)}
+        >
+          <PersonAddOutlinedIcon />
+        </IconButton>
         <IconButton aria-label="Close list" onClick={() => navigate("/home")}>
           <CloseIcon />
         </IconButton>
